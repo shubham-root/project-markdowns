@@ -229,10 +229,57 @@ class ResetTask(FlaskForm):
 ```
 Each class in this script refers to a CRUD action to be done on the document, while each field is a reference to all the fields that that are affected by the actions. 
 
-We have already seen the Controller and Model part of our app, next comes the View which we'll keep simple just by an html page which is dynamically populated by use of double curly braces like this `{{<dynamic content here> }}` . The html file is kept in a folder named `templates` 
+We have already seen the Controller and Model part of our app, next comes the View which we'll keep simple just by an html page which is dynamically populated by use of double curly braces like this `{{<dynamic content here> }}` . The html file is kept in a folder named `templates` and named `home.html` as can be seen mentioned in the `run.py` script to assign view the control.
 
+With this we have our app ready now only the final piece of puzzle of app development i.e. app deployment is left to be handled. As discussed earlier we want to deploy our application as **WSGI** application and use **gunicorn** to do so. To install **gunicorn** we'll use pip installer, but this intallation will be done as a part of container startup. 
+
+We are almost done but there is one surprise element which we have not talked about yet. **Nginx** reverse proxy server and load balancer, can be used the application frontend to receive the http requests and cater it to our application istting right behind it. What **nginx** will provide us flexibility to scale our application without worrying about number of hits from user increasing at any scale. How we are employing nginx however is using an **nginx docker container** spun out of an images downloaded from docker hub and configured using a file which is mounted on the container at container creation time. The configuration file for our case has been named `proxy.conf` and placed inside the proxy folder with the following content
+```conf
+server{
+
+    listen: 80;
+
+    location/ {
+        proxy_pass http://web;
+    }
+}
+```
+This simple file just tells the nginx to keep listening to request load on port 80 and route it to http://web where web refers to the name of service container running the application. This name is defined in the `docker-compose.yaml`. We are left with one more dockerfile before looking at our docker-compose file. The `dockerfile` of nginx looks like this 
+```dockerfile
+FROM nginx:alpine
+RUN rm /etc/nginx/conf.d/*
+COPY proxy.conf /etc/nginx/conf.d/
+```
+This dockerfile just tells to use alpine flavor of linux loaded with nginx to create the container. It also removes any default port configurations by cleaning up all files inside `conf.d` folder and mounting `proxy.conf` file just created instead. With this we are all set for our `docker-compose.yaml`
+```dockerfile
+version: '3'
+services:
+  web:
+    build: web
+    restart: on-failure 
+    volumes:
+     - /home/shubham/projects/microservices/mongo-crud/web:/home/web
+    command: gunicorn wsgi:app
+  redis:
+    image: "redis:alpine"
+  dstmongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    expose:
+      - "27017"
+    volumes:
+      - .:/database
+    entrypoint: docker-entrypoint.sh
+    command: mongod
+  proxy:
+    image: nginx
+    ports:
+      - "80:80"
+```
 
 
 [Work In Progress] 
 
  
+
