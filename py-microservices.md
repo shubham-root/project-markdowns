@@ -1,6 +1,6 @@
 # Getting Started with Python Microservices with Docker on Linux | Ubuntu 16.04 LTS | For Complete Beginners 
 
- _(author: Shubham Mishra, Merilytics Inc.)_ 
+ _(author: Shubham Mishra.)_ 
 
 [![](http://www.keysolutions.com.pe/wp-content/uploads/2017/02/keyLogoPython-150x120.png)](https://www.docker.com)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![](https://www.docker.com/sites/default/files/vertical_small.png)](https://www.docker.com)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[![N|Solid](http://1.bp.blogspot.com/-lgzZ7YBRO-Q/VJqGdotLkPI/AAAAAAAAAHo/qHriDc2Ff8s/w150-h120-c/canonical-ubuntu-logo-1.jpg)](https://www.docker.com) 
 
